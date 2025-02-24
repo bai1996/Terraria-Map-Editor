@@ -1,29 +1,21 @@
 param(
-    [string] $VersionPrefix = "4.0.0",
-    [string] $VersionSuffix
+    [string] $ReleasePath = ".\release",
+    [string] $Version = "5.0.0-dev"
 )
 
-$buildArgs = @(
-    "publish", 
-    "-c"
-    "Release"
-    ".\src\TEdit.sln", 
-    '/p:signcert="BC Code Signing"')
+$versionfixed = $Version.Replace("/", "_");
+$versionSplit = $versionfixed.Split("-");
 
-if ($null -ne $VersionPrefix) {
-    $buildArgs += "/p:VersionPrefix=""$VersionPrefix"""
-}
+$VersionPrefix = $versionSplit[0]
 
-if ($null -ne $VersionSuffix) {
-    $buildArgs += "/p:VersionSuffix=""$VersionSuffix"""
-}
-
-& dotnet $buildArgs
-
-Remove-Item -Path ".\TEdit*.zip"
-
-if ($null -ne $VersionSuffix) {
-  Compress-Archive -Path ".\src\TEdit\bin\Release\net462\publish\*" -DestinationPath ".\TEdit$VersionPrefix-$VersionSuffix.zip"
+if ($versionSplit.Length -gt 1) {
+    $VersionSuffix = $versionSplit[1]
 } else {
-  Compress-Archive -Path ".\src\TEdit\bin\Release\net462\publish\*" -DestinationPath ".\TEdit$VersionPrefix.zip"
+    $VersionSuffix = ""
 }
+
+if (Test-Path -Path ".\$ReleasePath") { Remove-Item -Path ".\$ReleasePath" -Force -Recurse }
+New-Item -Path ".\$ReleasePath\" -Force -ItemType "directory"
+
+.\build-legacy.ps1 -ReleasePath $ReleasePath -VersionPrefix $VersionPrefix -VersionSuffix $VersionSuffix
+.\build-avalonia.ps1 -ReleasePath $ReleasePath -VersionPrefix $VersionPrefix -VersionSuffix $VersionSuffix

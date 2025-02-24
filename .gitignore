@@ -46,3 +46,10 @@ build/
 .vs/*
 
 .vs/
+*.wxs
+*.wix
+*.msi
+/src/publish/*
+/publish/
+/publish-avalonia/
+.idea/

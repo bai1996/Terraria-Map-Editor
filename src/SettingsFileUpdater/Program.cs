@@ -1,8 +1,11 @@
-﻿using System;
+﻿using SettingsFileUpdater.TerrariaHost;
+using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.Json;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace SettingsFileUpdater
@@ -14,9 +17,18 @@ namespace SettingsFileUpdater
             //LoadTerrariaAsm();
             RegisterAssemblyResolver();
 
+
             LoadTerrariaAsm();
-            var wrapper = TerrariaHost.TerrariaWrapper.Initialize();
-           
+            Thread.CurrentThread.Name = "Main Thread";
+            //Terraria.Program.SavePath = Path.GetDirectoryName( Assembly.GetExecutingAssembly().Location);
+
+            var wrapper = TerrariaHost.TerrariaWrapper.Initialize(true);
+            wrapper.MakeWorldFile("1234", "1234", 0);
+
+
+
+
+            
 
             // XDocument xdoc = XDocument.Load("settings.xml");
             // 
@@ -39,6 +51,27 @@ namespace SettingsFileUpdater
             // }
             // xdoc.Save("settings3.xml");
 
+//#if DEBUG
+//            XDocument xdoc = XDocument.Load("settings.xml");
+//            var xTiles = xdoc.Root.Element("Tiles");
+//            for (int t = 623; t < World.TileCount; t++)
+//            {
+//                var xTile = xTiles.Elements().FirstOrDefault(e => int.Parse(e.Attribute("Id").Value) == t);
+//                var tileProps = WorldConfiguration.TileProperties.FirstOrDefault(item => item.Id == t);
+//                //var sprite = (!tileProps.IsFramed) ? null : WorldConfiguration.Sprites2.FirstOrDefault(s => s.Tile == t);
+//                xTile.SetAttributeValue("Color", tileProps.Color.ToString());
+
+//                // update frame colors
+//            }
+//            var xWalls = xdoc.Root.Element("Walls");
+//            for (int t = 0; t < World.WallCount; t++)
+//            {
+//                var xWall = xWalls.Elements().FirstOrDefault(e => int.Parse(e.Attribute("Id").Value) == t);
+//                var wallProps = WorldConfiguration.WallProperties.FirstOrDefault(item => item.Id == t);
+//                xWall.SetAttributeValue("Color", wallProps.Color.ColorToString());
+//            }
+//            xdoc.Save("settings2.xml");
+//#endif
 
             //foreach (var item in tilecolors)
             //{
@@ -53,17 +86,24 @@ namespace SettingsFileUpdater
             //     var wall = tiles.Elements().FirstOrDefault(t => int.Parse(t.Attribute("Id").Value) == item.Key);
             //     wall.SetAttributeValue("Color", item.Value);
             // }
+            return;
+
+            var bestiaryNpcs = wrapper.GetBestiaryData().ToList();
+
+            using (var stream = new FileStream("..\\..\\..\\..\\bestiaryData.json", FileMode.Create, FileAccess.Write))
+            {
+                JsonSerializer.Serialize(stream, bestiaryNpcs, new JsonSerializerOptions { WriteIndented = true});
+            }
 
 
+            Console.WriteLine(wrapper.GetMaxCounts());
 
-
-            Console.WriteLine(wrapper.GetTilesXml());
-            Console.WriteLine(wrapper.GetWallsXml());
-            //Console.WriteLine(wrapper.GetItemsXml());
-           // Console.WriteLine(wrapper.GetNpcsXml());
-            //Console.WriteLine(wrapper.GetPrefixesXml());
-
-            Console.ReadLine();
+            //Console.WriteLine(wrapper.GetTilesXml());
+            //Console.WriteLine(wrapper.GetWallsXml());
+            Console.WriteLine(wrapper.GetItemsXml());
+            Console.WriteLine(wrapper.GetMobsText());
+            Console.WriteLine(wrapper.GetNpcsXml());
+            Console.WriteLine(wrapper.GetPrefixesXml());
         }
 
         private static void LoadTerrariaAsm()

@@ -17,5 +17,14 @@
     <Setting Name="Telemetry" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">-1</Value>
     </Setting>
+    <Setting Name="TextureVisibilityZoomLevel" Type="System.Single" Scope="User">
+      <Value Profile="(Default)">6</Value>
+    </Setting>
+    <Setting Name="ShowNews" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="RealisticColors" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

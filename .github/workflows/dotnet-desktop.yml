@@ -1,0 +1,34 @@
+name: .NET Core Desktop
+
+on:
+  push:
+    branches:
+      - "*"
+  pull_request:
+    branches:
+      - "*"
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        configuration: [Release]
+
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Install the .NET Core workload
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      # Create the app package by building and packaging the Windows Application Packaging project
+      - name: Build code
+        shell: pwsh
+        run: |
+          dotnet restore .\src
+          dotnet build .\src\TEdit.sln /p:EnableWindowsTargeting=true /p:Configuration=Release

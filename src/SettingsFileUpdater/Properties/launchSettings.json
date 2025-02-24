@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "SettingsFileUpdater": {
+      "commandName": "Project",
+      "commandLineArgs": " > settings3.xml"
+    }
+  }
+}

@@ -8,12 +8,15 @@
         xmlns:p="clr-namespace:TEdit.Properties"
         xmlns:vm="clr-namespace:TEdit.ViewModel"
         xmlns:cv="clr-namespace:TEdit.Converters"
+        AllowDrop="True"
+        Drop="WorldFileDrop"
    >
     <Window.Resources>
         <Image x:Key="TB_LogIcon" x:Shared="false" Source="/Images/Toolbar/report_magnify.png" Height="16" Width="16" SnapsToDevicePixels="True" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
         <Image x:Key="TB_NewIcon" x:Shared="false" Source="/Images/Toolbar/new.png" Height="16" Width="16" SnapsToDevicePixels="True" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
         <Image x:Key="TB_SaveIcon" x:Shared="false" Source="/Images/Toolbar/save.png" Height="16" Width="16" SnapsToDevicePixels="True" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
         <Image x:Key="TB_SaveAsIcon" x:Shared="false" Source="/Images/Toolbar/saveas.png" Height="16" Width="16" SnapsToDevicePixels="True" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+        <Image x:Key="TB_SaveAsVersionIcon" x:Shared="false" Source="/Images/Toolbar/saveasversion.png" Height="16" Width="16" SnapsToDevicePixels="True" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
         <Image x:Key="TB_OpenIcon" x:Shared="false" Source="/Images/Toolbar/open.png" Height="16" Width="16" SnapsToDevicePixels="True" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
         <Image x:Key="TB_HelpIcon" x:Shared="false" Source="/Images/Toolbar/help.png" Height="16" Width="16" SnapsToDevicePixels="True" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
         <Image x:Key="TB_UpdateIcon" x:Shared="false" Source="/Images/Toolbar/update.png" Height="16" Width="16" SnapsToDevicePixels="True" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
@@ -25,6 +28,7 @@
         <Image x:Key="TB_DeleteIcon" x:Shared="false" Source="/Images/Toolbar/delete.png" Height="16" Width="16" SnapsToDevicePixels="True" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
         <Image x:Key="TB_ZoomInIcon" x:Shared="false" Source="/Images/Tools/zoom_in.png" Height="16" Width="16" SnapsToDevicePixels="True" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
         <Image x:Key="TB_ZoomOutIcon" x:Shared="false" Source="/Images/Tools/zoom_out.png" Height="16" Width="16" SnapsToDevicePixels="True" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+        <Image x:Key="TB_CropIcon" x:Shared="false" Source="Images/Toolbar/crop.png" Height="16" Width="16" SnapsToDevicePixels="True" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
         <cv:EnumToBoolConverter x:Key="boolEnumConverter" />
         <DataTemplate x:Key="MenuItemTemplate">
             <MenuItem Command="" CommandParameter="{Binding}">
@@ -64,6 +68,7 @@
                     <Separator Margin="1"/>
                     <MenuItem Header="{x:Static p:Language.menu_file_save}" Icon="{StaticResource TB_SaveIcon}" Command="{Binding SaveCommand}"/>
                     <MenuItem Header="{x:Static p:Language.menu_file_saveas}" Icon="{StaticResource TB_SaveAsIcon}" Command="{Binding SaveAsCommand}" />
+                    <MenuItem Header="{x:Static p:Language.menu_file_saveasversion}" Icon="{StaticResource TB_SaveAsVersionIcon}" Command="{Binding SaveAsVersionCommand}"/>
                     <Separator Margin="1"/>
                     <MenuItem Header="{x:Static p:Language.menu_file_autosave}" IsCheckable="True" IsChecked="{Binding IsAutoSaveEnabled}" />
                     <MenuItem Header="{x:Static p:Language.menu_file_autoupdate}" IsCheckable="True" IsChecked="{Binding CheckUpdates}" />
@@ -76,6 +81,9 @@
                         <MenuItem Header="{x:Static p:Language.menu_language_ar}" IsCheckable="True" IsChecked="{Binding CurrentLanguage, Converter={StaticResource boolEnumConverter}, ConverterParameter={x:Static vm:LanguageSelection.Arabic}}" Command="{Binding SetLanguageCommand}" CommandParameter="{x:Static vm:LanguageSelection.Arabic}"  />
                         <MenuItem Header="{x:Static p:Language.menu_language_zh}" IsCheckable="True" IsChecked="{Binding CurrentLanguage, Converter={StaticResource boolEnumConverter}, ConverterParameter={x:Static vm:LanguageSelection.Chinese}}" Command="{Binding SetLanguageCommand}" CommandParameter="{x:Static vm:LanguageSelection.Chinese}"  />
                         <MenuItem Header="{x:Static p:Language.menu_language_pl}" IsCheckable="True" IsChecked="{Binding CurrentLanguage, Converter={StaticResource boolEnumConverter}, ConverterParameter={x:Static vm:LanguageSelection.Polish}}" Command="{Binding SetLanguageCommand}" CommandParameter="{x:Static vm:LanguageSelection.Polish}"  />
+                        <MenuItem Header="{x:Static p:Language.menu_language_de}" IsCheckable="True" IsChecked="{Binding CurrentLanguage, Converter={StaticResource boolEnumConverter}, ConverterParameter={x:Static vm:LanguageSelection.German}}" Command="{Binding SetLanguageCommand}" CommandParameter="{x:Static vm:LanguageSelection.German}"  />
+                        <MenuItem Header="{x:Static p:Language.menu_language_pt}" IsCheckable="True" IsChecked="{Binding CurrentLanguage, Converter={StaticResource boolEnumConverter}, ConverterParameter={x:Static vm:LanguageSelection.Portuguese}}" Command="{Binding SetLanguageCommand}" CommandParameter="{x:Static vm:LanguageSelection.Portuguese}"  />
+                        <MenuItem Header="{x:Static p:Language.menu_language_es}" IsCheckable="True" IsChecked="{Binding CurrentLanguage, Converter={StaticResource boolEnumConverter}, ConverterParameter={x:Static vm:LanguageSelection.Spanish}}" Command="{Binding SetLanguageCommand}" CommandParameter="{x:Static vm:LanguageSelection.Spanish}"  />
                     </MenuItem>
 
                     <Separator Margin="1"/>
@@ -92,10 +100,12 @@
                 </MenuItem>
                 <MenuItem Header="{x:Static p:Language.menu_layers}">
                     <MenuItem Header="{x:Static p:Language.menu_layers_textures}" IsCheckable="True" IsChecked="{Binding ShowTextures}" />
+                    <MenuItem Header="{x:Static p:Language.menu_layers_usetexturecolor}" IsCheckable="True" IsChecked="{Binding RealisticColors}" />
                     <MenuItem Header="{x:Static p:Language.menu_layers_grid}" IsCheckable="True" IsChecked="{Binding ShowGrid}" />
                     <Separator Margin="1" />
                     <MenuItem Header="{x:Static p:Language.menu_layers_walls}" IsCheckable="True" IsChecked="{Binding ShowWalls}" />
                     <MenuItem Header="{x:Static p:Language.menu_layers_tiles}" IsCheckable="True" IsChecked="{Binding ShowTiles}" />
+                    <MenuItem Header="{x:Static p:Language.tool_paint_coating}" IsCheckable="True" IsChecked="{Binding ShowCoatings}" />
                     <MenuItem Header="{x:Static p:Language.menu_layers_liquid}" IsCheckable="True" IsChecked="{Binding ShowLiquid}" />
                     <Separator Margin="1" />
                     <MenuItem Header="{x:Static p:Language.menu_layers_actuators}" IsCheckable="True" IsChecked="{Binding ShowActuators}" />
@@ -103,18 +113,33 @@
                     <MenuItem Header="{x:Static p:Language.menu_layers_wire_blue}" IsCheckable="True" IsChecked="{Binding ShowBlueWires}" />
                     <MenuItem Header="{x:Static p:Language.menu_layers_wire_green}" IsCheckable="True" IsChecked="{Binding ShowGreenWires}" />
                     <MenuItem Header="{x:Static p:Language.menu_layers_wire_yellow}" IsCheckable="True" IsChecked="{Binding ShowYellowWires}" />
+                    <MenuItem Header="{x:Static p:Language.menu_layers_wire_all}" IsCheckable="True" IsChecked="{Binding ShowAllWires}" />
+                    <MenuItem Header="{x:Static p:Language.menu_layers_wire_transparency}" IsCheckable="True" IsChecked="{Binding ShowWireTransparency}" />
                     <Separator Margin="1" />
                     <MenuItem Header="{x:Static p:Language.menu_layers_points}" IsCheckable="True" IsChecked="{Binding ShowPoints}" />
+                    <Separator Margin="1" />
+                    <MenuItem>
+                        <MenuItem.Template>
+                            <ControlTemplate TargetType="{x:Type MenuItem}">
+                                <DockPanel Margin="22 1 1 1">
+                                    <Label Content="Textures Visible " DockPanel.Dock="Left" />
+                                    <Slider Value="{Binding TextureVisibilityZoomLevel, Mode=TwoWay}" VerticalAlignment="Center"  Minimum="3" Maximum="10" SmallChange="1" Width="80" />
+                                    <Label Content="{Binding TextureVisibilityZoomLevel, Mode=OneWay}" Width="24" Margin="5 0 2 0" DockPanel.Dock="Right" />
+                                </DockPanel>
+                            </ControlTemplate>
+                        </MenuItem.Template>
+                    </MenuItem>
                 </MenuItem>
                 <MenuItem Header="{x:Static p:Language.menu_plugins}" ItemsSource="{Binding Plugins}" ItemContainerStyle="{StaticResource SubmenuItemStyle}">
 
                 </MenuItem>
                 <MenuItem Header="{x:Static p:Language.menu_help}">
-                    <MenuItem Header="{x:Static p:Language.menu_help_log}" Command="{Binding ViewLogCommand}" Icon="{StaticResource TB_LogIcon}"/>
+                    <MenuItem Header="News" Command="{Binding ShowNewsCommand}" Icon="{StaticResource TB_LogIcon}"/>
                     <MenuItem Header="{x:Static p:Language.menu_help_wiki}" Icon="{StaticResource TB_HelpIcon}" Command="{Binding LaunchWikiCommand}"/>
                     <Separator Margin="1" />
                     <MenuItem Header="{x:Static p:Language.menu_help_update}" Icon="{StaticResource TB_UpdateIcon}" Command="{Binding UpdateCommand}" />
                     <MenuItem Header="{x:Static p:Language.menu_help_settings}" Icon="{StaticResource TB_UpdateXmlIcon}"  Command="{Binding UpdateCommand}" />
+                    <MenuItem Header="{x:Static p:Language.menu_help_log}" Command="{Binding ViewLogCommand}" Icon="{StaticResource TB_LogIcon}"/>
                     <Separator Margin="1"/>
                     <MenuItem Header="{x:Static p:Language.menu_help_about}" />
                 </MenuItem>
@@ -131,7 +156,7 @@
                         <TextBlock Text="{x:Static p:Language.statusbar_extra_label}" VerticalAlignment="Center" Margin="5,0"/>
                         <TextBox Text="{Binding MouseOverTile.TileExtras, Mode=OneWay}" Width="100" IsReadOnly="True" />
                         <TextBlock Text="{x:Static p:Language.statusbar_frame_label}" VerticalAlignment="Center" Margin="5,0"/>
-                        <TextBox Text="{Binding MouseOverTile.UV, StringFormat={}{0}, Mode=OneWay}" Width="50" IsReadOnly="True" />
+                        <TextBox Text="{Binding MouseOverTile.UV, StringFormat={}{0}, Mode=OneWay}" Width="50" IsReadOnly="True" PreviewMouseDown="TextBox_PreviewMouseDown"/>
                         <TextBlock Text="{x:Static p:Language.statusbar_paint_label}" VerticalAlignment="Center" Margin="5,0"/>
                         <TextBox Text="{Binding MouseOverTile.Paint, Mode=OneWay}" Width="180" IsReadOnly="True" />
                         <TextBlock Text="{x:Static p:Language.statusbar_selection_label}" VerticalAlignment="Center" Margin="5,0"/>
@@ -156,14 +181,16 @@
                 <Button Content="{StaticResource TB_RedoIcon}" ToolTip="{x:Static p:Language.menu_edit_redo}" Padding="3" Command="{Binding RedoCommand}" Margin="1" Height="24" Width="24" />
                 <Button Content="{StaticResource TB_DeleteIcon}" ToolTip="{x:Static p:Language.menu_edit_delete}" Padding="3" Command="{Binding DeleteCommand}" Margin="1" Height="24" Width="24" />
                 <Separator Height="2" />
+                <Button Content="{StaticResource TB_CropIcon}" ToolTip="{x:Static p:Language.menu_edit_crop}" Padding="3" Command="{Binding CropCommand}" Margin="1" Height="24" Width="24" />
+                <Separator Height="2" />
                 <Button Content="{StaticResource TB_CopyIcon}" ToolTip="{x:Static p:Language.menu_edit_copy}" Padding="3" Command="{Binding CopyCommand}" Margin="1" Height="24" Width="24" />
                 <View:ToolSelectorView />
             </StackPanel>
             <DockPanel DockPanel.Dock="Top" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
                     <Border  BorderThickness="1" BorderBrush="{StaticResource SolidBorderBrush}" Background="{StaticResource ControlBackgroundBrush}">
-                        <Grid  Width="250" Height="100">
-                            <Image Source="{Binding MinimapImage}" Stretch="UniformToFill" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" RenderOptions.BitmapScalingMode="Linear" />
+                        <Grid  Width="300" Height="100">
+                            <Image Source="{Binding MinimapImage}" Stretch="None" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" RenderOptions.BitmapScalingMode="HighQuality" MouseDown="Image_MouseDown" />
                         </Grid>
                     </Border>
                     <View:Sponsor Width="140" VerticalAlignment="Center" Margin="2 0 2 0"></View:Sponsor>
@@ -256,10 +283,13 @@
                         <View:WorldAnalysis HorizontalAlignment="Stretch"  VerticalAlignment="Stretch"/>
                     </TabItem>
                     <TabItem Header="{x:Static p:Language.editor_tabs_tally}">
-                        <View:KillTallyView HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                        <View:BestiaryEditor HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
                     </TabItem>
                     <TabItem Header="{x:Static p:Language.editor_tabs_tileentities}">
                         <View:TileEntityExaminer HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                    </TabItem>
+                    <TabItem Header="{x:Static p:Language.editor_tabs_creative}">
+                        <View:CreativePowers HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
                     </TabItem>
                 </TabControl>
             </Expander>
